@@ -1,1 +1,1 @@
-## Starter template from vitepress
+## Starter template for vitepress
