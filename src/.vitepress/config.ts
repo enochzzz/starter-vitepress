@@ -1,10 +1,13 @@
+import { modules } from '../../meta/modules'
+import type { ModuleMainest } from '../../meta/types'
+
 export default {
   lang: 'en-US', // en-US  zh-CN
-  title: 'pkg-name', 
-  description: 'docs for pkg-name.', 
-  appearance: true, 
-  base: '/base/', 
-  ignoreDeadLinks: true, 
+  title: 'pkg-name',
+  description: 'docs for pkg-name.',
+  appearance: true,
+  base: '/base/',
+  ignoreDeadLinks: true,
   lastUpdated: true,
   themeConfig: {
     logo: '/favicon.svg',
@@ -14,7 +17,7 @@ export default {
     ],
     nav: [
       {
-        test: 'guide',
+        text: 'guide',
         link: '/guide/',
       },
       {
@@ -32,28 +35,7 @@ export default {
         ],
       },
     ],
-    sidebar: [
-      {
-        text: 'guide',
-        items: [
-          { text: 'guide', link: '/guide/' },
-        ],
-      },
-      {
-        text: 'module_a',
-        items: [
-          { text: 'item a', link: '/a/' },
-          { text: 'item b', link: '/b/a' },
-        ],
-      },
-      {
-        text: 'module_b',
-        items: [
-          { text: 'item a', link: '/a/b' },
-          { text: 'item b', link: '/b/' },
-        ],
-      },
-    ],
+    sidebar: getSidebarByModules(modules),
     // editLink: {
     //   pattern: 'https://github.com/vuejs/vitepress/edit/main/docs/:path',
     //   text: 'Edit this page on GitHub'
@@ -64,4 +46,31 @@ export default {
     ],
     lastUpdatedText: 'Updated Date',
   },
+}
+
+interface BaseSidebar {
+  text: string
+  link?: string
+}
+
+interface Sidebar extends BaseSidebar {
+  items?: BaseSidebar[]
+}
+
+export function getSidebarByModules(modules: ModuleMainest[]) {
+  const result: Sidebar[] = []
+  modules.forEach((i) => {
+    const item: Sidebar = {
+      text: '',
+    }
+    item.text = i.name
+    if (i.children)
+      item.items = getSidebarByModules(i.children)
+
+    else
+      item.link = i.route
+
+    result.push(item)
+  })
+  return result
 }
